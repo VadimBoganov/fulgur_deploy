@@ -1,0 +1,52 @@
+services:
+  caddy:
+    image: caddy:2
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy-data:/data
+      - caddy-config:/config
+    restart: unless-stopped
+    depends_on:
+      - admin
+      - api
+      - solders
+
+  admin:
+    build:
+      context: ../fulgur_admin
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ../fulgur_dotnet
+      dockerfile: Api/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_HTTP_PORTS: 5080
+      SQLITE_DB_PATH: /app/data/fulgur.db
+      Auth__Issuer: fulgur
+      Auth__Audience: https://gk-fulgur.ru
+      Auth__SecretKey: ${AUTH_SECRET_KEY:?AUTH_SECRET_KEY is required}
+      Images__StoragePath: /app/images
+      Images__Url: https://gk-fulgur.ru/images/
+      Smtp__Password: ${SMTP_PASSWORD:?SMTP_PASSWORD is required}
+    volumes:
+      - sqlite-data:/app/data
+      - images-data:/app/images
+    restart: unless-stopped
+
+  solders:
+    build:
+      context: ../fulgur_solders
+    volumes:
+      - images-data:/usr/share/nginx/html/images
+    restart: unless-stopped
+
+volumes:
+  caddy-data:
+  caddy-config:
+  sqlite-data:
+  images-data:

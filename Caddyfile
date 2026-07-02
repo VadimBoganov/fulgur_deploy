@@ -1,0 +1,17 @@
+gk-fulgur.ru {
+    handle /api/* {
+        reverse_proxy api:5080
+    }
+    handle {
+        reverse_proxy solders:8082
+    }
+}
+
+admin.gk-fulgur.ru {
+    handle /api/* {
+        reverse_proxy api:5080
+    }
+    handle {
+        reverse_proxy admin:8081
+    }
+}
