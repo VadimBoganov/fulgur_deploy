@@ -6,3 +6,16 @@ services:
     volumes:
       - ./Caddyfile.local:/etc/caddy/Caddyfile.local
     command: caddy run --config /etc/caddy/Caddyfile.local --adapter caddyfile
+
+  # Local hostnames are admin.localhost / localhost, which are not in the
+  # production AllowedHosts list — relax host filtering for local testing.
+  api:
+    environment:
+      AllowedHosts: "*"
+
+  # Start api first so it initializes the shared images volume as the `app` user
+  # (otherwise solders, running as root, would create it root-owned and api
+  # uploads would fail with a permission error).
+  solders:
+    depends_on:
+      - api
