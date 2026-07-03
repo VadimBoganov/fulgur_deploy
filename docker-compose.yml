@@ -26,10 +26,14 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_HTTP_PORTS: 5080
+      AllowedHosts: "gk-fulgur.ru;admin.gk-fulgur.ru"
       SQLITE_DB_PATH: /app/data/fulgur.db
       Auth__Issuer: fulgur
       Auth__Audience: https://gk-fulgur.ru
       Auth__SecretKey: ${AUTH_SECRET_KEY:?AUTH_SECRET_KEY is required}
+      Auth__AccessTokenMinutes: 60
+      Cors__AllowedOrigins__0: https://admin.gk-fulgur.ru
+      Cors__AllowedOrigins__1: https://gk-fulgur.ru
       Images__StoragePath: /app/images
       Images__Url: https://gk-fulgur.ru/images/
       Smtp__Password: ${SMTP_PASSWORD:?SMTP_PASSWORD is required}

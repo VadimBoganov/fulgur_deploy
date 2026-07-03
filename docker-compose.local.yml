@@ -1,0 +1,8 @@
+# Local override: run Caddy with Caddyfile.local (localhost / admin.localhost,
+# self-signed certs). Use together with the base file:
+#   docker compose -f docker-compose.yml -f docker-compose.local.yml up --build
+services:
+  caddy:
+    volumes:
+      - ./Caddyfile.local:/etc/caddy/Caddyfile.local
+    command: caddy run --config /etc/caddy/Caddyfile.local --adapter caddyfile

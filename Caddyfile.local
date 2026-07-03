@@ -1,21 +1,20 @@
+{
+    # Local dev only: use Caddy's internal self-signed CA (no public ACME).
+    local_certs
+}
+
 (security_headers) {
     header {
-        # Enforce HTTPS for a year, including subdomains.
-        Strict-Transport-Security "max-age=31536000; includeSubDomains"
-        # Prevent MIME sniffing (also hardens image serving from the shared volume).
         X-Content-Type-Options "nosniff"
-        # Disallow framing to mitigate clickjacking.
         X-Frame-Options "DENY"
         Referrer-Policy "strict-origin-when-cross-origin"
-        # CSP: no 'unsafe-inline' for scripts — all inline JS has been externalized.
-        # style-src keeps 'unsafe-inline' for framework/inline style attributes.
+        # Same CSP as production (HSTS intentionally omitted for local testing).
         Content-Security-Policy "default-src 'self'; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' https://ajax.googleapis.com https://mc.yandex.ru; connect-src 'self' https://mc.yandex.ru; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'"
-        # Do not advertise the server software.
         -Server
     }
 }
 
-gk-fulgur.ru {
+localhost {
     import security_headers
     handle /api/* {
         reverse_proxy api:5080
@@ -25,7 +24,7 @@ gk-fulgur.ru {
     }
 }
 
-admin.gk-fulgur.ru {
+admin.localhost {
     import security_headers
     handle /api/* {
         reverse_proxy api:5080
